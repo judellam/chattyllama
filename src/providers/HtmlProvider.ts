@@ -15,6 +15,15 @@ export class HtmlProvider {
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>ChattyLlama</title>
             <link rel="stylesheet" type="text/css" href="${styleUri}">
+            <style>
+                html, body {
+                    scrollbar-width: none; /* Firefox */
+                    -ms-overflow-style: none; /* Internet Explorer and Edge */
+                }
+                html::-webkit-scrollbar, body::-webkit-scrollbar {
+                    display: none;
+                }
+            </style>
         </head>
         <body>
             <div class="chat-container">
@@ -112,6 +121,8 @@ export class HtmlProvider {
                             if (codeMatch) {
                                 const language = codeMatch[1] || 'text';
                                 const code = codeMatch[2].trim();
+                                // Fix: Properly decode escaped newlines
+                                const decodedCode = code.replace(/\\\\n/g, '\\n').replace(/\\n/g, '\\n');
                                 
                                 formattedHtml += \`
                                     <div class="code-section">
@@ -121,7 +132,7 @@ export class HtmlProvider {
                                                 <span class="language">\${language}</span>
                                                 <button class="copy-btn" onclick="copyCode(this)" title="Copy code">📋</button>
                                             </div>
-                                            <pre><code class="language-\${language}">\${escapeHtml(code)}</code></pre>
+                                            <pre><code class="language-\${language}">\${escapeHtml(decodedCode)}</code></pre>
                                         </div>
                                     </div>
                                 \`;
@@ -135,72 +146,17 @@ export class HtmlProvider {
                                     <div class="summary-content">\${escapeHtml(summaryText)}</div>
                                 </div>
                             \`;
-                        } else if (section.startsWith('**Follow-up Questions:**')) {
-                            // Handle questions
-                            const lines = section.split('\\n').slice(1); // Skip the title
-                            const questions = lines.filter(line => line.trim().match(/^\\d+\\./));
-                            
-                            if (questions.length > 0) {
-                                formattedHtml += \`
-                                    <div class="questions-section">
-                                        <div class="section-title">Follow-up Questions</div>
-                                        <ul class="questions-list">
-                                \`;
-                                
-                                questions.forEach(question => {
-                                    const cleanQuestion = question.replace(/^\\d+\\.\\s*/, '').trim();
-                                    formattedHtml += \`<li>\${escapeHtml(cleanQuestion)}</li>\`;
-                                });
-                                
-                                formattedHtml += \`
-                                        </ul>
-                                    </div>
-                                \`;
-                            }
-                        } else if (section.startsWith('**Suggested Actions:**')) {
-                            // Handle actions
-                            const lines = section.split('\\n').slice(1);
-                            const actions = lines.filter(line => line.trim().match(/^\\d+\\./));
-                            
-                            if (actions.length > 0) {
-                                formattedHtml += \`
-                                    <div class="actions-section">
-                                        <div class="section-title">Suggested Actions</div>
-                                        <ul class="actions-list">
-                                \`;
-                                
-                                actions.forEach(action => {
-                                    const cleanAction = action.replace(/^\\d+\\.\\s*/, '').trim();
-                                    formattedHtml += \`<li><code>\${escapeHtml(cleanAction)}</code></li>\`;
-                                });
-                                
-                                formattedHtml += \`
-                                        </ul>
-                                    </div>
-                                \`;
-                            }
-                        } else if (section.startsWith('**Action Results:**')) {
-                            // Handle action results
-                            const resultText = section.replace('**Action Results:**', '').trim();
-                            formattedHtml += \`
-                                <div class="action-results-section">
-                                    <div class="section-title">Action Results</div>
-                                    <div class="action-results-content">
-                                        <pre>\${escapeHtml(resultText)}</pre>
-                                    </div>
-                                </div>
-                            \`;
                         } else {
                             // Handle regular content (details section)
-                            // Parse inline code and regular markdown
                             let processedContent = section;
                             
                             // Parse inline code
                             processedContent = processedContent.replace(/\`([^\`]+)\`/g, '<code class="inline-code">$1</code>');
                             
-                            // Parse code blocks
+                            // Parse code blocks with proper newline handling
                             processedContent = processedContent.replace(/\`\`\`(\\w+)?\\n?([\\s\\S]*?)\`\`\`/g, (match, lang, code) => {
-                                return \`<pre class="code-block"><code class="language-\${lang || 'text'}">\${escapeHtml(code.trim())}</code></pre>\`;
+                                const decodedCode = code.replace(/\\\\n/g, '\\n').replace(/\\n/g, '\\n').trim();
+                                return \`<pre class="code-block"><code class="language-\${lang || 'text'}">\${escapeHtml(decodedCode)}</code></pre>\`;
                             });
                             
                             // Convert line breaks to <br>
@@ -307,67 +263,85 @@ export class HtmlProvider {
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>ChattyLlama Settings</title>
             <link rel="stylesheet" type="text/css" href="${styleUri}">
+            <style>
+                html, body {
+                    scrollbar-width: none; /* Firefox */
+                    -ms-overflow-style: none; /* Internet Explorer and Edge */
+                }
+                html::-webkit-scrollbar, body::-webkit-scrollbar {
+                    display: none;
+                }
+            </style>
         </head>
         <body>
             <div class="header">
-                <button class="back-button" id="backButton" title="Back to Chat">←</button>
+                <button class="back-button" id="backButton">←</button>
                 <div class="title">Settings</div>
             </div>
             
             <div class="setting-group">
-                <label for="modelSelect">Model:</label>
-                <select id="modelSelect">
-                    <option value="code-helper">code-helper</option>
-                    <option value="phi4">phi4</option>
-                    <option value="llama3">llama3</option>
-                    <option value="codellama">codellama</option>
-                    <option value="mistral">mistral</option>
-                    <option value="qwen">qwen</option>
-                </select>
-                <div class="description">Select the Ollama model to use for chat responses</div>
+                <label for="ollamaUrl">Ollama URL:</label>
+                <input type="text" id="ollamaUrl" placeholder="http://localhost:11434">
+                <div class="description">The URL where your Ollama server is running</div>
             </div>
-
+            
             <div class="setting-group">
-                <label for="endpointInput">Endpoint:</label>
-                <input type="text" id="endpointInput" placeholder="http://localhost:11434" />
-                <div class="description">Ollama server endpoint URL</div>
+                <label for="model">Model:</label>
+                <select id="model">
+                    <option value="llama2">Llama 2</option>
+                    <option value="codellama">Code Llama</option>
+                    <option value="mistral">Mistral</option>
+                    <option value="neural-chat">Neural Chat</option>
+                </select>
+                <div class="description">Choose the AI model to use for responses</div>
             </div>
-
+            
             <button id="saveButton">Save Settings</button>
 
+            <div class="actions-section">
+                <h3>Actions</h3>
+                <button class="action-button" id="analyzeWorkspaceButton">
+                    📁 Analyze Workspace Files
+                </button>
+                <div class="description">Recursively analyze all files in the workspace and generate summaries</div>
+            </div>
+            
             <script>
                 const vscode = acquireVsCodeApi();
-                const modelSelect = document.getElementById('modelSelect');
-                const endpointInput = document.getElementById('endpointInput');
-                const saveButton = document.getElementById('saveButton');
-                const backButton = document.getElementById('backButton');
-
-                vscode.postMessage({ command: 'loadSettings' });
-
-                saveButton.addEventListener('click', () => {
+                
+                document.getElementById('backButton').addEventListener('click', () => {
+                    vscode.postMessage({ command: 'back' });
+                });
+                
+                document.getElementById('saveButton').addEventListener('click', () => {
                     const settings = {
-                        model: modelSelect.value,
-                        endpoint: endpointInput.value
+                        ollamaUrl: document.getElementById('ollamaUrl').value,
+                        model: document.getElementById('model').value
                     };
-                    
-                    vscode.postMessage({
-                        command: 'saveSettings',
-                        settings: settings
-                    });
+                    vscode.postMessage({ command: 'saveSettings', settings });
                 });
 
-                backButton.addEventListener('click', () => {
-                    vscode.postMessage({
-                        command: 'openChat'
-                    });
+                document.getElementById('analyzeWorkspaceButton').addEventListener('click', () => {
+                    const button = document.getElementById('analyzeWorkspaceButton');
+                    button.disabled = true;
+                    button.textContent = '🔄 Analyzing...';
+                    vscode.postMessage({ command: 'analyzeWorkspace' });
                 });
-
+                
+                // Load current settings
+                vscode.postMessage({ command: 'loadSettings' });
+                
                 window.addEventListener('message', event => {
                     const message = event.data;
                     switch (message.command) {
-                        case 'loadSettings':
-                            modelSelect.value = message.settings.model;
-                            endpointInput.value = message.settings.endpoint;
+                        case 'settingsLoaded':
+                            document.getElementById('ollamaUrl').value = message.settings.ollamaUrl || 'http://localhost:11434';
+                            document.getElementById('model').value = message.settings.model || 'llama2';
+                            break;
+                        case 'analysisComplete':
+                            const button = document.getElementById('analyzeWorkspaceButton');
+                            button.disabled = false;
+                            button.textContent = '📁 Analyze Workspace Files';
                             break;
                     }
                 });

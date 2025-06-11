@@ -1,10 +1,12 @@
 body {
-    padding: 10px;
+    padding: 0; /* Remove padding that causes overflow */
     font-family: var(--vscode-font-family);
     font-size: var(--vscode-font-size);
     color: var(--vscode-foreground);
     background-color: var(--vscode-editor-background);
     margin: 0;
+    height: 100vh; /* Set explicit height */
+    overflow: hidden; /* Prevent body scrolling */
 }
 
 .chat-container {
@@ -15,6 +17,7 @@ body {
     font-size: var(--vscode-font-size);
     color: var(--vscode-foreground);
     background-color: var(--vscode-editor-background);
+    overflow: hidden; /* Prevent container scrolling */
 }
 
 .header {
@@ -56,15 +59,23 @@ body {
     padding: 16px;
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 4px; /* Reduced from 8px to 4px for tighter spacing */
+    /* Hide scrollbar for webkit browsers */
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* Internet Explorer and Edge */
+}
+
+/* Hide scrollbar for webkit browsers */
+.messages::-webkit-scrollbar {
+    display: none;
 }
 
 .message {
-    padding: 12px 16px;
+    padding: 8px 16px; /* Reduced padding from 12px to 8px */
     border-radius: 8px;
     line-height: 1.6;
     word-wrap: break-word;
-    margin-bottom: 16px;
+    margin-bottom: 4px; /* Reduced from 8px to 4px */
 }
 
 .message.user {
@@ -73,7 +84,8 @@ body {
     align-items: flex-start;
     gap: 12px;
     background-color: transparent;
-    padding: 12px 0;
+    padding: 8px 0; /* Reduced from 12px to 8px */
+    margin-bottom: 2px; /* Reduced from 4px to 2px for even tighter spacing */
 }
 
 .message.assistant {
@@ -216,14 +228,17 @@ body {
     border-radius: 3px;
     font-family: var(--vscode-editor-font-family);
     font-size: 0.9em;
-    color: var(--vscode-textPreformat-foreground);
+    /* Use editor foreground instead of textPreformat which might not exist */
+    color: var(--vscode-editor-foreground);
+    /* Add a subtle border for better visibility */
+    border: 1px solid var(--vscode-textBlockQuote-border);
 }
 
 .summary-section {
     margin: 16px 0;
     padding: 12px;
-    background-color: var(--vscode-editorWidget-background);
-    border-left: 4px solid var(--vscode-textLink-foreground);
+    background-color: var(--vscode-editor-background);
+    border-left: 4px solid var(--vscode-panel-border);
     border-radius: 0 4px 4px 0;
 }
 
@@ -323,4 +338,52 @@ body {
 #sendButton:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+}
+
+/* Add these styles for better theme support */
+
+/* Ensure highlighted/selected text is always visible */
+::selection {
+    background-color: var(--vscode-editor-selectionBackground);
+    color: var(--vscode-editor-foreground);
+}
+
+/* For any highlighted content in messages */
+.highlight, .highlighted-text {
+    background-color: var(--vscode-editor-findMatchHighlightBackground);
+    color: var(--vscode-editor-foreground);
+    padding: 1px 2px;
+    border-radius: 2px;
+}
+
+/* Ensure links are always visible */
+a {
+    color: var(--vscode-textLink-foreground);
+    text-decoration: none;
+}
+
+a:hover {
+    color: var(--vscode-textLink-activeForeground);
+    text-decoration: underline;
+}
+
+/* For any search results or matches */
+.search-match {
+    background-color: var(--vscode-editor-findMatchBackground);
+    color: var(--vscode-editor-foreground);
+    border: 1px solid var(--vscode-editor-findMatchBorder);
+}
+
+/* Ensure error states are visible */
+.error {
+    color: var(--vscode-errorForeground);
+    background-color: var(--vscode-inputValidation-errorBackground);
+    border: 1px solid var(--vscode-inputValidation-errorBorder);
+}
+
+/* Ensure warning states are visible */
+.warning {
+    color: var(--vscode-warningForeground);
+    background-color: var(--vscode-inputValidation-warningBackground);
+    border: 1px solid var(--vscode-inputValidation-warningBorder);
 }
