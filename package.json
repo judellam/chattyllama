@@ -1,0 +1,84 @@
+{
+  "name": "chattyllama",
+  "displayName": "ChattyLlama",
+  "description": "Use Ollama to help you code in VSCode",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.100.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [],
+  "main": "./out/extension.js",
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.10",
+    "@types/node": "20.x",
+    "@types/vscode": "^1.100.0",
+    "@typescript-eslint/eslint-plugin": "^8.31.1",
+    "@typescript-eslint/parser": "^8.31.1",
+    "@vscode/test-cli": "^0.0.10",
+    "@vscode/test-electron": "^2.5.2",
+    "eslint": "^9.25.1",
+    "typescript": "^5.8.3"
+  },
+  "contributes": {
+    "configuration": {
+      "title": "ChattyLlama",
+      "properties": {
+        "chattyllama.model": {
+          "type": "string",
+          "default": "code-helper",
+          "description": "The Ollama model to use for chat responses"
+        },
+        "chattyllama.endpoint": {
+          "type": "string",
+          "default": "http://localhost:11434",
+          "description": "The Ollama server endpoint URL"
+        }
+      }
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "chattyllama",
+          "title": "ChattyLlama",
+          "icon": "$(comment-discussion)"
+        }
+      ]
+    },
+    "views": {
+      "chattyllama": [
+        {
+          "id": "chattyllama.chatView",
+          "name": "Chat",
+          "type": "webview",
+          "when": "true",
+          "icon": "$(comment-discussion)"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "chattyllama.helloWorld",
+        "title": "Hello World"
+      },
+      {
+        "command": "chattyllama.openSettings",
+        "title": "Open Settings"
+      }
+    ]
+  },
+  "dependencies": {
+    "@types/node-fetch": "^2.6.12",
+    "node-fetch": "^3.3.2"
+  }
+}

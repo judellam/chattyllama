@@ -1,0 +1,81 @@
+body {
+    padding: 20px;
+    font-family: var(--vscode-font-family);
+    font-size: var(--vscode-font-size);
+    color: var(--vscode-foreground);
+    background-color: var(--vscode-editor-background);
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--vscode-panel-border);
+    margin-bottom: 20px;
+}
+
+.back-button {
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 2px;
+    background: none;
+    border: none;
+    color: var(--vscode-foreground);
+    font-size: 16px;
+}
+
+.back-button:hover {
+    background-color: var(--vscode-toolbar-hoverBackground);
+}
+
+.title {
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.setting-group {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+select, input {
+    width: 100%;
+    padding: 8px;
+    background-color: var(--vscode-input-background);
+    color: var(--vscode-input-foreground);
+    border: 1px solid var(--vscode-input-border);
+    border-radius: 2px;
+    box-sizing: border-box;
+}
+
+select:focus, input:focus {
+    outline: 1px solid var(--vscode-focusBorder);
+    outline-offset: -1px;
+}
+
+#saveButton {
+    width: 100%;
+    padding: 10px;
+    background-color: var(--vscode-button-background);
+    color: var(--vscode-button-foreground);
+    border: none;
+    border-radius: 2px;
+    cursor: pointer;
+    font-size: var(--vscode-font-size);
+}
+
+#saveButton:hover {
+    background-color: var(--vscode-button-hoverBackground);
+}
+
+.description {
+    font-size: 12px;
+    color: var(--vscode-descriptionForeground);
+    margin-top: 4px;
+}
