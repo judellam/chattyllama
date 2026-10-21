@@ -4,6 +4,7 @@ import { promisify } from 'util';
 import { OllamaChatResponse, ConversationMessage } from '../types';
 
 const execAsync = promisify(exec);
+const execAsyncTwo = promisify(exec);
 
 export class OllamaService {
     private _conversationHistory: ConversationMessage[] = [];
